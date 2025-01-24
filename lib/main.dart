@@ -9,6 +9,194 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return MaterialApp(
+      home: OnboardingScreen(),
+    );
+  }
+}
+
+class OnboardingScreen extends StatefulWidget {
+  @override
+  _OnboardingScreenState createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  final List<Color> _backgroundColors = [
+    Color.fromRGBO(255, 48, 32, 1),
+    const Color.fromARGB(255, 68, 223, 148),
+    Colors.orangeAccent,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            color: _backgroundColors[_currentPage],
+          ),
+          PageView(
+            controller: _pageController,
+            onPageChanged: (int page) {
+              setState(() {
+                _currentPage = page;
+              });
+            },
+            children: [
+              OnboardingPage(
+                title: "İstanbul'a Hoşgeldiniz",
+                description:
+                    'İstanbul ilçelerindeki mahalle ilişkilerini görselleştirin.',
+                image: 'assets/istanbul_sticker_1.png',
+                imageHeight: 240,
+              ),
+              OnboardingPage(
+                title: 'Haritayı Keşfedin',
+                description: 'Farklı ilçeleri görmek için haritayı kaydırın.',
+                image: 'assets/istanbul_sticker_2.png',
+                imageHeight: 200,
+              ),
+              OnboardingPage(
+                title: 'Haydi Başlayalım',
+                description: 'Keşfetmeye başlamak için butona tıklayın.',
+                image: 'assets/istanbul_sticker_3.png',
+                imageHeight: 200,
+                isLastPage: true,
+                onButtonPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => MainScreen()),
+                  );
+                },
+              ),
+            ],
+          ),
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(3, (index) {
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 4),
+                  width: _currentPage == index ? 12 : 8,
+                  height: _currentPage == index ? 12 : 8,
+                  decoration: BoxDecoration(
+                    color: _currentPage == index ? Colors.white : Colors.grey,
+                    shape: BoxShape.circle,
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class OnboardingPage extends StatelessWidget {
+  final String title;
+  final String description;
+  final String image;
+  final double imageHeight;
+  final bool isLastPage;
+  final VoidCallback? onButtonPressed;
+
+  const OnboardingPage({
+    required this.title,
+    required this.description,
+    required this.image,
+    required this.imageHeight,
+    this.isLastPage = false,
+    this.onButtonPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(image, height: imageHeight),
+        SizedBox(height: 20),
+        Stack(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                foreground: Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = 2
+                  ..color = Colors.black,
+              ),
+            ),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 10),
+        Stack(
+          children: [
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                foreground: Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = 2.5
+                  ..color = Colors.grey[900]!,
+              ),
+            ),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        if (isLastPage)
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: ElevatedButton(
+              onPressed: onButtonPressed,
+              child: Text('Keşfetmeye Başla'),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  bool _showImage = true;
+  Color _backgroundColor = Colors.grey[200]!;
+  double _scale = 1.0;
+  double _previousScale = 1.0;
+
+  @override
+  Widget build(BuildContext context) {
     final districts = {
       '1': 'Esenyurt',
       '2': 'K.Cekmece',
@@ -16,7 +204,7 @@ class MainApp extends StatelessWidget {
       '4': 'Umraniye',
       '5': 'Bagcilar',
       '6': 'Bahcelie.',
-      '7': 'Sultangazi',
+      '7': 'SultanG.',
       '8': 'Maltepe',
       '9': 'Uskudar',
       '10': 'Basaksehir',
@@ -30,7 +218,7 @@ class MainApp extends StatelessWidget {
       '18': 'EyupS.',
       '19': 'AtaS.',
       '20': 'Beylikduzu',
-      '21': 'Sultanbeyli',
+      '21': 'SultanB.',
       '22': 'Fatih',
       '23': 'Sariyer',
       '24': 'Arnavutkoy',
@@ -56,38 +244,38 @@ class MainApp extends StatelessWidget {
       '2': Offset(395, 268),
       '3': Offset(754, 190),
       '4': Offset(615, 205),
-      '5': Offset(430, 250),
+      '5': Offset(425, 250),
       '6': Offset(438, 282),
-      '7': Offset(436, 175),
+      '7': Offset(439, 187),
       '8': Offset(647, 270),
       '9': Offset(580, 225),
-      '10': Offset(380, 210),
+      '10': Offset(375, 195),
       '11': Offset(680, 210),
-      '12': Offset(470, 215),
+      '12': Offset(465, 210),
       '13': Offset(680, 295),
       '14': Offset(575, 255),
-      '15': Offset(516, 196),
+      '15': Offset(515, 190),
       '16': Offset(365, 290),
       '17': Offset(448, 228),
-      '18': Offset(458, 125),
+      '18': Offset(467, 140),
       '19': Offset(620, 245),
       '20': Offset(318, 338),
       '21': Offset(720, 235),
-      '22': Offset(510, 260),
+      '22': Offset(510, 263),
       '23': Offset(512, 87),
       '24': Offset(290, 120),
       '25': Offset(700, 120),
       '26': Offset(780, 270),
-      '27': Offset(488, 285),
+      '27': Offset(495, 287),
       '28': Offset(230, 290),
       '29': Offset(465, 265),
       '30': Offset(473, 238),
-      '31': Offset(515, 155),
+      '31': Offset(520, 155),
       '32': Offset(620, 100),
       '33': Offset(5, 220),
       '34': Offset(435, 314),
-      '35': Offset(520, 235),
-      '36': Offset(549, 207),
+      '35': Offset(530, 242),
+      '36': Offset(552, 200),
       '37': Offset(130, 110),
       '38': Offset(820, 55),
       '39': Offset(600, 360),
@@ -111,7 +299,7 @@ class MainApp extends StatelessWidget {
       '15': Size(20, 20),
       '16': Size(30, 30),
       '17': Size(22, 22),
-      '18': Size(50, 50),
+      '18': Size(46, 46),
       '19': Size(30, 30),
       '20': Size(40, 40),
       '21': Size(36, 36),
@@ -121,7 +309,7 @@ class MainApp extends StatelessWidget {
       '25': Size(55, 55),
       '26': Size(60, 60),
       '27': Size(20, 20),
-      '28': Size(50, 50),
+      '28': Size(55, 55),
       '29': Size(20, 20),
       '30': Size(23, 23),
       '31': Size(30, 30),
@@ -163,7 +351,7 @@ class MainApp extends StatelessWidget {
       '25': Colors.tealAccent,
       '26': Colors.amberAccent,
       '27': Colors.brown[300]!,
-      '28': Colors.grey[300]!,
+      '28': Colors.amber,
       '29': Colors.red[300]!,
       '30': Colors.green[300]!,
       '31': Colors.blue[300]!,
@@ -177,30 +365,83 @@ class MainApp extends StatelessWidget {
       '39': Colors.teal[300]!,
     };
 
-    return MaterialApp(
-      home: Scaffold(
-        body: Stack(
+    final neighbors = {
+      '1': ['16', '20', '28', '10', '24'],
+      '2': ['16', '10', '34', '5', '6'],
+      '3': ['26', '13', '21', '11', '25', '38'],
+      '4': ['9', '19', '11', '25', '32'],
+      '5': ['10', '2', '6', '29', '17'],
+      '6': ['5', '34', '2', '29'],
+      '7': ['10', '5', '12', '18'],
+      '8': ['14', '19', '11', '13'],
+      '9': ['14', '19', '4', '32', '36', '35', '22'],
+      '10': ['24', '1', '16', '2', '5', '17', '7', '18'],
+      '11': ['3', '21', '13', '8', '19', '4', '25'],
+      '12': ['18', '7', '30', '17'],
+      '13': ['3', '21', '11', '8', '39'],
+      '14': ['9', '19', '8'],
+      '15': ['18', '31', '36', '35'],
+      '16': ['20', '1', '10', '2'],
+      '17': ['10', '5', '29', '30', '12', '7', '27'],
+      '18': ['24', '7', '10', '23', '31', '15', '35', '22', '30', '12', '27'],
+      '19': ['14', '9', '4', '11', '8'],
+      '20': ['1', '28', '16'],
+      '21': ['11', '3', '13'],
+      '22': ['9', '35', '18', '27'],
+      '23': ['18', '31', '36', '32'],
+      '24': ['37', '28', '1', '10', '18'],
+      '25': ['32', '4', '11', '3', '38'],
+      '26': ['3'],
+      '27': ['34', '29', '17', '30', '18', '22'],
+      '28': ['33', '37', '24', '1', '20'],
+      '29': ['5', '6', '27', '17', '34'],
+      '30': ['17', '12', '18', '27'],
+      '31': ['18', '23', '36', '15', '35'],
+      '32': ['38', '25', '4', '9', '23'],
+      '33': ['37', '28', '24'],
+      '34': ['29', '2', '6', '27'],
+      '35': ['31', '15', '18', '22', '9', '36'],
+      '36': ['35', '31', '15', '23', '9'],
+      '37': ['33', '28', '24'],
+      '38': ['32', '25', '3'],
+      '39': ['13']
+    };
+
+    return Scaffold(
+      body: GestureDetector(
+        onScaleStart: (ScaleStartDetails details) {
+          _previousScale = _scale;
+          setState(() {});
+        },
+        onScaleUpdate: (ScaleUpdateDetails details) {
+          _scale = _previousScale * details.scale;
+          setState(() {});
+        },
+        onScaleEnd: (ScaleEndDetails details) {
+          _previousScale = 1.0;
+          setState(() {});
+        },
+        child: Stack(
           children: [
-            Container(
-              color: Colors.grey[200], // Set the background color
-            ),
-            Positioned.fill(
-              child: Transform.translate(
-                offset: Offset(25, -90),
-                child: Transform.scale(
-                  scale: 1.35, // Slightly zoom in
-                  child: Transform.rotate(
-                    angle: -15 * 3.141592653589793 / 180,
-                    child: FittedBox(
-                      fit: BoxFit.cover,
-                      child: Image.asset(
-                        'assets/ist.png',
+            _showImage
+                ? Positioned.fill(
+                    child: Transform.translate(
+                      offset: Offset(25, -90),
+                      child: Transform.scale(
+                        scale: 1.35, // Slightly zoom in
+                        child: Transform.rotate(
+                          angle: -15 * 3.141592653589793 / 180,
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: Image.asset(
+                              'assets/istanbulMap.jpg',
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ),
+                  )
+                : Container(color: _backgroundColor),
             Align(
               alignment: Alignment.topCenter,
               child: Padding(
@@ -210,6 +451,10 @@ class MainApp extends StatelessWidget {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
+            ),
+            CustomPaint(
+              size: Size.infinite,
+              painter: LinePainter(positions, neighbors, sizes),
             ),
             ...districts.entries.map((entry) {
               final position = positions[entry.key]!;
@@ -225,7 +470,7 @@ class MainApp extends StatelessWidget {
                     onPressed: null,
                     backgroundColor: color,
                     shape: CircleBorder(
-                      side: BorderSide(color: Colors.black, width: 1.25),
+                      side: BorderSide(color: Colors.black, width: 0.6),
                     ),
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
@@ -238,7 +483,7 @@ class MainApp extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               foreground: Paint()
                                 ..style = PaintingStyle.stroke
-                                ..strokeWidth = 2
+                                ..strokeWidth = 1.5
                                 ..color = Colors.black,
                             ),
                           ),
@@ -257,9 +502,59 @@ class MainApp extends StatelessWidget {
                 ),
               );
             }).toList(),
+            Positioned(
+              bottom: 20,
+              right: 20,
+              child: FloatingActionButton(
+                onPressed: () {
+                  setState(() {
+                    _showImage = !_showImage;
+                    if (!_showImage) {
+                      _backgroundColor =
+                          Colors.blue; // Change this to any color you want
+                    }
+                  });
+                },
+                child: Icon(Icons.image),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+}
+
+class LinePainter extends CustomPainter {
+  final Map<String, Offset> positions;
+  final Map<String, List<String>> neighbors;
+  final Map<String, Size> sizes;
+  final double lineWidth;
+  final Color lineColor;
+
+  LinePainter(this.positions, this.neighbors, this.sizes,
+      {this.lineWidth = 1.5, this.lineColor = Colors.black});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = lineColor
+      ..strokeWidth = lineWidth
+      ..style = PaintingStyle.stroke;
+
+    neighbors.forEach((key, neighborList) {
+      final start = positions[key]! +
+          Offset(sizes[key]!.width / 2, sizes[key]!.height / 2);
+      for (var neighbor in neighborList) {
+        final end = positions[neighbor]! +
+            Offset(sizes[neighbor]!.width / 2, sizes[neighbor]!.height / 2);
+        canvas.drawLine(start, end, paint);
+      }
+    });
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }
