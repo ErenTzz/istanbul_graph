@@ -202,7 +202,7 @@ class _MainScreenState extends State<MainScreen> {
   Color _backgroundColor = Colors.grey[200]!;
   double _scale = 1.0;
   double _previousScale = 1.0;
-  Offset _offset = Offset(-20, -20); // Offset to shift all buttons and lines
+  Offset _offset = Offset(-40, -40); // Offset to shift all buttons and lines
 
   @override
   Widget build(BuildContext context) {
