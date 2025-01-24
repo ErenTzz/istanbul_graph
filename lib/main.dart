@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.immersiveSticky); // Hide status bar
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeRight,
+    DeviceOrientation.landscapeLeft
+  ]); // Set landscape mode
   runApp(const MainApp());
 }
 
@@ -194,6 +202,7 @@ class _MainScreenState extends State<MainScreen> {
   Color _backgroundColor = Colors.grey[200]!;
   double _scale = 1.0;
   double _previousScale = 1.0;
+  Offset _offset = Offset(-20, -20); // Offset to shift all buttons and lines
 
   @override
   Widget build(BuildContext context) {
@@ -272,13 +281,13 @@ class _MainScreenState extends State<MainScreen> {
       '30': Offset(473, 238),
       '31': Offset(520, 155),
       '32': Offset(620, 100),
-      '33': Offset(5, 220),
+      '33': Offset(50, 220),
       '34': Offset(435, 314),
-      '35': Offset(530, 242),
-      '36': Offset(552, 200),
-      '37': Offset(130, 110),
-      '38': Offset(820, 55),
-      '39': Offset(600, 360),
+      '35': Offset(520, 232),
+      '36': Offset(542, 190),
+      '37': Offset(120, 100),
+      '38': Offset(810, 45),
+      '39': Offset(590, 350),
     };
 
     final sizes = {
@@ -454,10 +463,10 @@ class _MainScreenState extends State<MainScreen> {
             ),
             CustomPaint(
               size: Size.infinite,
-              painter: LinePainter(positions, neighbors, sizes),
+              painter: LinePainter(positions, neighbors, sizes, _offset),
             ),
             ...districts.entries.map((entry) {
-              final position = positions[entry.key]!;
+              final position = positions[entry.key]! + _offset;
               final size = sizes[entry.key]!;
               final color = colors[entry.key]!;
               return Positioned(
@@ -515,7 +524,7 @@ class _MainScreenState extends State<MainScreen> {
                     }
                   });
                 },
-                child: Icon(Icons.image),
+                child: Icon(Icons.map),
               ),
             ),
           ],
@@ -529,10 +538,11 @@ class LinePainter extends CustomPainter {
   final Map<String, Offset> positions;
   final Map<String, List<String>> neighbors;
   final Map<String, Size> sizes;
+  final Offset offset;
   final double lineWidth;
   final Color lineColor;
 
-  LinePainter(this.positions, this.neighbors, this.sizes,
+  LinePainter(this.positions, this.neighbors, this.sizes, this.offset,
       {this.lineWidth = 1.5, this.lineColor = Colors.black});
 
   @override
@@ -544,10 +554,12 @@ class LinePainter extends CustomPainter {
 
     neighbors.forEach((key, neighborList) {
       final start = positions[key]! +
-          Offset(sizes[key]!.width / 2, sizes[key]!.height / 2);
+          Offset(sizes[key]!.width / 2, sizes[key]!.height / 2) +
+          offset;
       for (var neighbor in neighborList) {
         final end = positions[neighbor]! +
-            Offset(sizes[neighbor]!.width / 2, sizes[neighbor]!.height / 2);
+            Offset(sizes[neighbor]!.width / 2, sizes[neighbor]!.height / 2) +
+            offset;
         canvas.drawLine(start, end, paint);
       }
     });
